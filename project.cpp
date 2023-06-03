@@ -71,6 +71,67 @@ void insert(n2* root, string word)//insertion in the tri treee
 }
 
 
+
+void deleteNode(n2* node) {
+	if (node == nullptr)
+		return;
+
+	for (int i = 0; i < 26; i++) {
+		if (node->next[i])
+			deleteNode(node->next[i]);
+	}
+
+	delete node;
+}
+
+void deleteWord(n2* root, string word) {
+	n2* curr = root;
+	for (int i = 0; i < word.length(); i++) {
+		int idx = word[i] - 'a';
+		if (!curr->next[idx])
+			return; // Word doesn't exist in the Trie, nothing to delete
+		curr = curr->next[idx];
+	}
+
+	curr->WE = false; // Mark the word end variable as false
+
+	// Check if the current node has any child nodes or if it is the end of another word
+	bool hasChild = false;
+	for (int i = 0; i < 26; i++) {
+		if (curr->next[i]) {
+			hasChild = true;
+			break;
+		}
+	}
+
+	if (!hasChild) {
+		// No child nodes, safe to delete this node and all its parents if they are not the end of other words
+		curr = root;
+		for (int i = 0; i < word.length(); i++) {
+			int idx = word[i] - 'a';
+			n2* parent = curr;
+			curr = curr->next[idx];
+
+			bool hasChild = false;
+			for (int j = 0; j < 26; j++) {
+				if (parent->next[j] && parent->next[j] != curr) {
+					hasChild = true;
+					break;
+				}
+			}
+
+			if (!parent->WE && !hasChild) {
+				deleteNode(parent);
+				parent->next[idx] = nullptr;
+			}
+		}
+	}
+}
+
+
+
+
+
 bool Mylastnode(n2* root)
 {
 	for (int i = 0; i < 26; i++)
@@ -385,7 +446,7 @@ int main()
 	}
 	n1* head = nullptr;
 	int op;
-	cout << "1)To Start from last eidted notepad\n2)To start from new notepad" << endl;
+	cout << "1)To Start from last eidted notepad\n2)To start from new notepad\n3)To delete from existing file" << endl;
 	cin >> op;
 	if (op == 1) {
 		ifstream input;
@@ -405,6 +466,61 @@ int main()
 		o.open("Notepad.txt");
 		o << " ";
 		o.close();
+
+	}
+
+	else if (op == 3)
+	{
+		string filename;
+		cout << "Enter the name of the existing file: ";
+		cin >> filename;
+
+		ifstream file;
+		file.open(filename);
+		if (!file.is_open()) {
+			cout << "Failed to open the file." << endl;
+			return 0;
+		}
+
+		string wordToDelete;
+		cout << "Enter the word to delete from the file: ";
+		cin >> wordToDelete;
+
+		ofstream tempFile;
+		tempFile.open("temp.txt");
+
+		string line;
+		while (getline(file, line))
+		{
+			// Delete the word from each line
+			deleteWord(root, wordToDelete);
+
+			// Write the modified line to the temporary file
+			tempFile << line << endl;
+		}
+
+		file.close();
+		tempFile.close();
+
+		// Replace the original file with the modified temporary file
+		remove(filename.c_str());
+		rename("temp.txt", filename.c_str());
+
+		ifstream modifiedFile;
+		modifiedFile.open(filename);
+		if (!modifiedFile.is_open()) {
+			cout << "Failed to open the modified file." << endl;
+			return 0;
+		}
+
+		cout << "Modified file contents:" << endl;
+		
+		while (getline(modifiedFile, line))
+		{
+			cout << line << endl;
+		}
+
+		modifiedFile.close();
 	}
 	system("pause");
 	string msg1, ch, msg2;
