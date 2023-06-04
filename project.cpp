@@ -406,6 +406,28 @@ void deleteWordFromFile(const string& filename, const string& word) {
 
 
 
+bool searchWordInFile(const std::string& filename, const std::string& word) {
+	std::ifstream file(filename);
+	std::string line;
+
+	if (!file) {
+		std::cout << "File not found." << std::endl;
+		return false;
+	}
+
+	while (getline(file, line)) {
+		if (line.find(word) != std::string::npos) {
+			file.close();
+			return true;
+		}
+	}
+
+	file.close();
+	return false;
+}
+
+
+
 int main()
 {
 	n3* hf = NULL;
@@ -421,7 +443,7 @@ int main()
 	}
 	n1* head = nullptr;
 	int op;
-	cout << "1)To Start from last eidted notepad\n2)To start from new notepad\n3)to delete a word from existed file" << endl;
+	cout << "1)To Start from last eidted notepad\n2)To start from new notepad\n3)to delete a word from existed file\n4)search word" << endl;
 	cin >> op;
 	if (op == 1) {
 		ifstream input;
@@ -454,6 +476,21 @@ int main()
 		cin >> word;
 
 		deleteWordFromFile(filename, word);
+	}
+	else if (op == 4)
+	{
+		
+		string filename = "Notepad.txt";  // Replace with your file name
+		string word = "search";  // Replace with the word you want to search
+		cout << "Enter word" << endl;
+		cin >> word;
+
+		if (searchWordInFile(filename, word)) {
+			cout << "Word found in the file." << endl;
+		}
+		else {
+			cout << "Word not found in the file." << endl;
+		}
 	}
 	system("pause");
 	string msg1, ch, msg2;
