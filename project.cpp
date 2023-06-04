@@ -406,17 +406,17 @@ void deleteWordFromFile(const string& filename, const string& word) {
 
 
 
-bool searchWordInFile(const std::string& filename, const std::string& word) {
-	std::ifstream file(filename);
-	std::string line;
+bool searchWordInFile(const string& filename, const string& word) {
+	ifstream file(filename);
+	string line;
 
 	if (!file) {
-		std::cout << "File not found." << std::endl;
+		cout << "File not found." << endl;
 		return false;
 	}
 
 	while (getline(file, line)) {
-		if (line.find(word) != std::string::npos) {
+		if (line.find(word) != string::npos) {
 			file.close();
 			return true;
 		}
@@ -424,6 +424,41 @@ bool searchWordInFile(const std::string& filename, const std::string& word) {
 
 	file.close();
 	return false;
+}
+
+
+
+bool findAndReplaceWord(const string& filename, const string& wordToFind, const string& replacementWord) {
+	ifstream file(filename);
+	string line;
+	string fileContent;
+
+	if (!file) {
+		cout << "File not found." << endl;
+		return false;
+	}
+
+	while (getline(file, line)) {
+		size_t found = line.find(wordToFind);
+		while (found != string::npos) {
+			line.replace(found, wordToFind.length(), replacementWord);
+			found = line.find(wordToFind, found + replacementWord.length());
+		}
+		fileContent += line + "\n";
+	}
+
+	file.close();
+
+	ofstream outFile(filename);
+	if (!outFile) {
+		cout << "Failed to write to the file." << endl;
+		return false;
+	}
+
+	outFile << fileContent;
+	outFile.close();
+
+	return true;
 }
 
 
@@ -443,7 +478,7 @@ int main()
 	}
 	n1* head = nullptr;
 	int op;
-	cout << "1)To Start from last eidted notepad\n2)To start from new notepad\n3)to delete a word from existed file\n4)search word" << endl;
+	cout << "1)To Start from last eidted notepad\n2)To start from new notepad\n3)to delete a word from existed file\n4)search word\n5)find and replace a word" << endl;
 	cin >> op;
 	if (op == 1) {
 		ifstream input;
@@ -481,7 +516,7 @@ int main()
 	{
 		
 		string filename = "Notepad.txt";  // Replace with your file name
-		string word = "search";  // Replace with the word you want to search
+		string word;  // Replace with the word you want to search
 		cout << "Enter word" << endl;
 		cin >> word;
 
@@ -492,6 +527,25 @@ int main()
 			cout << "Word not found in the file." << endl;
 		}
 	}
+	else if (op == 5)
+	{
+		string filename = "Notepad.txt";  // Replace with your file name
+		string wordToFind;  // Replace with the word you want to find
+		string replacementWord;  // Replace with the word you want to replace with
+
+		cout << "Enter word to find" << endl;
+		cin >> wordToFind;
+		cout << "Enter word to replace" << endl;
+		cin >> replacementWord;
+
+		if (findAndReplaceWord(filename, wordToFind, replacementWord)) {
+			cout << "Word found and replaced in the file." << endl;
+		}
+		else {
+			cout << "Word not found in the file." << endl;
+		}
+	}
+
 	system("pause");
 	string msg1, ch, msg2;
 	bool m = true;
@@ -620,9 +674,6 @@ int main()
 		}
 
 	}
-
-
-
 
 
 	//system("pause");
