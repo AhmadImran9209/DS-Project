@@ -41,4 +41,3 @@ Choose option 2 to start with a new notepad.
 Choose option 3 to delete a word from the existing file.
 Choose option 4 to search for a word in the file.
 Choose option 5 to find and replace a word in the file.
-Follow the on-screen instructions for auto-suggestions and further actions. After editing, press any key to save and exit the program.
